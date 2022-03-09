@@ -196,11 +196,11 @@ public class Main {
     }
 
     private static boolean validParams(String params) {
-        if (params.matches("crunch [1-9]{1,2} [1-9]{1,2} [a-zA-Z0-9!@#$%^&*()_+/={},.<>/?';\\]\\[-]{1,64} o [A-Z]:[a-zA-Z0-9\\\\]{2,64}.txt")){
+        if (params.matches("crunch [0-9]{1,2} [1-9]{1,2} [a-zA-Z0-9!@#$%^&*()_+/={},.<>/?';\\]\\[-]{1,64} o [A-Z]:[a-zA-Z0-9\\\\]{2,64}.txt")){
             savePresent = true;
         }
 
-        if (params.matches("crunch [1-9]{1,2} [1-9]{1,2} [a-zA-Z0-9!@#$%^&*()_+/={},.<>/?';\\]\\[-]{1,64}") || params.matches("crunch [1-9]{1,2} [1-9]{1,2} [a-zA-Z0-9!@#$%^&*()_+/={},.<>/?';\\]\\[-]{1,64} o [A-Z]:[a-zA-Z0-9\\\\]{2,64}.txt")){
+        if (params.matches("crunch [0-9]{1,2} [1-9]{1,2} [a-zA-Z0-9!@#$%^&*()_+/={},.<>/?';\\]\\[-]{1,64}") || params.matches("crunch [0-9]{1,2} [1-9]{1,2} [a-zA-Z0-9!@#$%^&*()_+/={},.<>/?';\\]\\[-]{1,64} o [A-Z]:[a-zA-Z0-9\\\\]{2,64}.txt")){
             return true;
         }
         return false;

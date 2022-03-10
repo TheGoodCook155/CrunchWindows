@@ -1,5 +1,5 @@
-# CrunchCLI
-Crunch for Windows CLI
+# Crunch
+Crunch for Windows
 
 
 This app is an implementation of the famous password generator tool called "Crunch". The main reason I invested time in building the main functionality of Crunch is the "spaghetti code"

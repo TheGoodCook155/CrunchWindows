@@ -4,24 +4,22 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 public class Main {
 
-    private static boolean programStart = true;
     private static File file = null;
     private static Scanner scanner;
-    private static Path path; //TODO
+    private static Path path;
     private static String outputName;
     private static boolean savePresent = false;
     private static String saveLocationGlobal;
 
-    public static void main(String[] args) throws InvalidSyntaxException, IOException {
+    public static void main(String[] args) throws IOException {
 
         scanner = new Scanner(System.in);
 
@@ -30,28 +28,24 @@ public class Main {
         String input = scanner.nextLine();
 
             if (validParams(input) == true){
-                List<List<String>> res =  processParams(input);
-                if (savePresent == true) {
-                    saveFile(res, savePresent);
-                }
+                processParams(input);
             }else{
                 System.out.println("Invalid input exception, Check syntax! \n\n");
                 System.out.println("Usage: crunch [minLength] [maxLength] [chars to be included] o[path\\fileName.txt]: \n");
             }
     }
 
-    public static List<List<String>> processParams(String params) throws InvalidSyntaxException, IOException {
+    public static void processParams(String params) throws IOException {
 
         String strValues;
 
         String minMaxPrep = params.replaceAll("^crunch ","");
 
         String temp = minMaxPrep;
-
         if (savePresent == false) {
-            strValues = temp.replaceAll("^[0-9]{1,2} [0-9]{1,2} ", "").trim();
+            strValues = temp.replaceAll("^[1-9]{1}(\\d{0,1})? [0-9]{1,2} ", "").trim();
         }else{
-            strValues = temp.replaceAll("^[0-9]{1,2} [0-9]{1,2}","").replaceAll("o [a-zA-Z\\\\0-9:\\s]{2,64}.txt$","").trim();
+            strValues = temp.replaceAll("^[1-9]{1}(\\d{0,1})? [0-9]{1,2}","").replaceAll("o [a-zA-Z\\\\0-9:\\s]{2,64}.txt$","").trim();
         }
         String[] arrValues = createValueArray(strValues);
 
@@ -64,9 +58,8 @@ public class Main {
         int maxValue = Integer.parseInt(values[1]);
         String locationPrep = minMaxPrep;
 
-        if (locationPrep.matches("[1-9]{1,2} [1-9]{1,2} [a-zA-Z0-9!@#$%^&*()_+/={},.<>/?';\\\\]{2,64} o [A-Z]:[a-zA-Z0-9\\\\]{1,64}.txt")) {
-
-            String saveLocationAndFile = locationPrep.replaceAll("^[0-9] [0-9] [a-zA-Z0-9!@#$%^&*()-_=+<>,.;:\";'|\\]\\[{}]{1,64} o ", " ").trim();
+        if (locationPrep.matches("[1-9]{1}(\\d{0,1})? [0-9]{1,2} [a-zA-Z0-9!@#$%^&*()_+/={},.<>/?';\\]\\[-]{1,64} o [A-Z]:[a-zA-Z0-9\\\\]{2,64}.txt")) {
+            String saveLocationAndFile = locationPrep.replaceAll("[1-9]{1}(\\d{0,1})? [0-9]{1,2} [a-zA-Z0-9!@#$%^&*()_+/={},.<>/?';\\]\\[-]{1,64} o ", " ").trim();
             String saveLocation = saveLocationAndFile.replaceAll("[a-zA-Z0-9]{1,64}.txt$"," ").trim();
             path = Paths.get(saveLocation);
             saveLocationGlobal = saveLocation;
@@ -76,9 +69,7 @@ public class Main {
             }
 
             int fileNamePosition = saveLocationAndFile.lastIndexOf("\\");
-            System.out.println("FileNamePosition is: " + fileNamePosition);
             String fileName = saveLocationAndFile.substring(fileNamePosition + 1);
-            System.out.println("FileName is: " + fileName);
             outputName = fileName;
         }
 
@@ -89,26 +80,49 @@ public class Main {
             System.out.println("Minimum value is greater than Maximum value...Please revise");
         }
 
-       List<List<String>> res = processQuery(minValue,maxValue,arrValues);
-
-        return res;
+       processQuery(minValue,maxValue,arrValues);
 
     }
 
-    public static List<List<String>> processQuery(int min, int max, String[] arr) throws IOException {
-
-        List<List<String>> finalRes = new ArrayList<>();
-
+    public static void processQuery(int min, int max, String[] arr) throws IOException {
+        BufferedWriter writer = null;
+        String outputLocation = "";
+        if (savePresent == true){
+            outputLocation = saveLocationGlobal + outputName;
+            writer = new BufferedWriter(new FileWriter(outputLocation, StandardCharsets.UTF_8));
+        }
+        Queue<List<String>> finalRes = new LinkedList<>();
+        if (savePresent == true){
+            System.out.println("Saving...");
+        }
+        if (savePresent == false){
+            System.out.println("Calculating...");
+        }
         for (int i = 0; i < arr.length; i++) {
             for (int j = 0; j < arr.length; j++) {
                 List<String> res = new ArrayList<>();
-                res.add(arr[i] + arr[j]);
-                System.out.println(arr[i] + arr[j]);// Prints in console
+                String toWrite = arr[i] + arr[j];
+                res.add(toWrite);
                 finalRes.add(res);
 
+                if (savePresent == false && toWrite.length() >= min){
+                    System.out.println(toWrite);
+                }
+                if (savePresent == true && toWrite.length() >= min) {
+                    writer.write(toWrite);
+                    writer.write("\n");
+                    writer.flush();
+                }
             }
         }
 
+        int finalResSize = finalRes.size();
+        boolean maxStackAssigned = false;
+        int maxStack = 0;
+        if (maxStackAssigned == false) {
+            maxStack = finalResSize;
+            maxStackAssigned = true;
+        }
         int startIndexMain = 0;
         boolean play = true;
         int maxLength = 0;
@@ -118,10 +132,10 @@ public class Main {
         int indexInArrWhereStrMinLengthAppearsFirst = 0;
         boolean minIndex = false;
         while (play == true){
-
             for (int i = startIndexMain ; i < finalRes.size(); i++){
+                List<String> testList = finalRes.poll();
+                test = testList.get(0);
 
-                test = finalRes.get(i).get(0);
                 if (test.length() == max && assigned == false){
                     firstStrWithGivenLength = test;
                     assigned = true;
@@ -131,12 +145,20 @@ public class Main {
                     play = false;
                     break;
                 }
-
                 for (int j = 0; j < arr.length; j++){
                     List<String> res = new ArrayList<>();
-                    System.out.println(test+arr[j]); // PRINTS IN CONSOLE
-                    res.add(test + arr[j]);
 
+
+                    String toWrite = test+arr[j];
+                    res.add(toWrite);
+                    if (savePresent == false && toWrite.length() >= min){
+                        System.out.println(toWrite);
+                    }
+                    if (savePresent == true && toWrite.length() >= min){
+                        writer.write(toWrite);
+                        writer.write("\n");
+                        writer.flush();
+                    }
 
                     if((test + arr[j]).length() == min && minIndex == false){
                         indexInArrWhereStrMinLengthAppearsFirst = finalRes.size();
@@ -146,40 +168,15 @@ public class Main {
                     maxLength = testLength.length();
                     finalRes.add(res);
                 }
-                startIndexMain++;
-            }
-        }
-        return finalRes;
-    }
-
-    private static void saveFile(List<List<String>> res, boolean save){
-        String outputLocation = saveLocationGlobal + outputName;
-
-        System.out.println("Saving...");
-        if (save == true && res.size() > 0){
-            try (BufferedWriter writer = new BufferedWriter(new FileWriter(outputLocation))){
-
-                for (int i = 0; i < res.size(); i++){
-                    List<String> testArr = res.get(i);
-                    String toSave = "";
-                    for (int j = 0; j < testArr.size(); j++){
-                        toSave+= testArr.get(j);
-                    }
-                    System.out.println(toSave);
-                    if (i > 0){
-                        writer.write("\n");
-                    }
-                    writer.write(toSave);
-                    writer.flush();
+                if (startIndexMain < maxStack){
+                    startIndexMain++;
                 }
-            }catch (IOException e){
-                e.printStackTrace();
-            } finally {
-                System.out.println("Saving done");
-                System.out.println("================EOF=================");
             }
-        }else{
-            return;
+            startIndexMain = 0;
+        }
+        if (savePresent == true) {
+            System.out.println("Saving done");
+            System.out.println("================EOF=================");
         }
     }
 
@@ -196,11 +193,11 @@ public class Main {
     }
 
     private static boolean validParams(String params) {
-        if (params.matches("crunch [0-9]{1,2} [1-9]{1,2} [a-zA-Z0-9!@#$%^&*()_+/={},.<>/?';\\]\\[-]{1,64} o [A-Z]:[a-zA-Z0-9\\\\]{2,64}.txt")){
+        if (params.matches("crunch [1-9]{1}(\\d{0,1})? [0-9]{1,2} [a-zA-Z0-9!@#$%^&*()_+/={},.<>/?';\\]\\[-]{1,64} o [A-Z]:[a-zA-Z0-9\\\\]{2,64}.txt")){
             savePresent = true;
         }
 
-        if (params.matches("crunch [0-9]{1,2} [1-9]{1,2} [a-zA-Z0-9!@#$%^&*()_+/={},.<>/?';\\]\\[-]{1,64}") || params.matches("crunch [0-9]{1,2} [1-9]{1,2} [a-zA-Z0-9!@#$%^&*()_+/={},.<>/?';\\]\\[-]{1,64} o [A-Z]:[a-zA-Z0-9\\\\]{2,64}.txt")){
+        if (params.matches("crunch [1-9]{1}(\\d{0,1})? [0-9]{1,2} [a-zA-Z0-9!@#$%^&*()_+/={},.<>/?';\\]\\[-]{1,64}") || params.matches("crunch [1-9]{1}(\\d{0,1})? [0-9]{1,2} [a-zA-Z0-9!@#$%^&*()_+/={},.<>/?';\\]\\[-]{1,64} o [A-Z]:[a-zA-Z0-9\\\\]{2,64}.txt")){
             return true;
         }
         return false;

@@ -13,7 +13,7 @@ I may test it properly in the next period and may push some updates.
 
 ==============v2==============
 
-- Fixed memory leaks
+- Fixed some memory leaks
 
 - Improved input validation
 

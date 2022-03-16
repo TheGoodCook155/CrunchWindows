@@ -1,4 +1,4 @@
-package com.crunchcli;
+package com.crunch;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -18,8 +18,12 @@ public class Main {
     private static String outputName;
     private static boolean savePresent = false;
     private static String saveLocationGlobal;
+    private static Runtime runtime;
+
 
     public static void main(String[] args) throws IOException {
+
+
 
         scanner = new Scanner(System.in);
 
@@ -85,13 +89,15 @@ public class Main {
     }
 
     public static void processQuery(int min, int max, String[] arr) throws IOException {
+        Queue<String> finalRes = new LinkedList<>();
+        runtime = Runtime.getRuntime();
         BufferedWriter writer = null;
         String outputLocation = "";
         if (savePresent == true){
             outputLocation = saveLocationGlobal + outputName;
             writer = new BufferedWriter(new FileWriter(outputLocation, StandardCharsets.UTF_8));
         }
-        Queue<List<String>> finalRes = new LinkedList<>();
+
         if (savePresent == true){
             System.out.println("Saving...");
         }
@@ -100,10 +106,7 @@ public class Main {
         }
         for (int i = 0; i < arr.length; i++) {
             for (int j = 0; j < arr.length; j++) {
-                List<String> res = new ArrayList<>();
                 String toWrite = arr[i] + arr[j];
-                res.add(toWrite);
-                finalRes.add(res);
 
                 if (savePresent == false && toWrite.length() >= min){
                     System.out.println(toWrite);
@@ -113,9 +116,10 @@ public class Main {
                     writer.write("\n");
                     writer.flush();
                 }
+                finalRes.add(toWrite);
             }
         }
-
+        BufferedWriter log = new BufferedWriter(new FileWriter("leak.txt"));
         int finalResSize = finalRes.size();
         boolean maxStackAssigned = false;
         int maxStack = 0;
@@ -125,16 +129,16 @@ public class Main {
         }
         int startIndexMain = 0;
         boolean play = true;
-        int maxLength = 0;
+//        int maxLength = 0;
         String firstStrWithGivenLength = "";
         boolean assigned = false;
         String test = "";
-        int indexInArrWhereStrMinLengthAppearsFirst = 0;
+//        int indexInArrWhereStrMinLengthAppearsFirst = 0;
         boolean minIndex = false;
+
         while (play == true){
             for (int i = startIndexMain ; i < finalRes.size(); i++){
-                List<String> testList = finalRes.poll();
-                test = testList.get(0);
+                test = finalRes.poll();
 
                 if (test.length() == max && assigned == false){
                     firstStrWithGivenLength = test;
@@ -146,11 +150,8 @@ public class Main {
                     break;
                 }
                 for (int j = 0; j < arr.length; j++){
-                    List<String> res = new ArrayList<>();
-
 
                     String toWrite = test+arr[j];
-                    res.add(toWrite);
                     if (savePresent == false && toWrite.length() >= min){
                         System.out.println(toWrite);
                     }
@@ -161,18 +162,28 @@ public class Main {
                     }
 
                     if((test + arr[j]).length() == min && minIndex == false){
-                        indexInArrWhereStrMinLengthAppearsFirst = finalRes.size();
+//                        indexInArrWhereStrMinLengthAppearsFirst = finalRes.size();
                         minIndex = true;
                     }
-                    String testLength = test+arr[j];
-                    maxLength = testLength.length();
-                    finalRes.add(res);
+//                    String testLength = test+arr[j];
+//                    maxLength = testLength.length();
+                    finalRes.add(toWrite);
+
+                        log.write(String.valueOf(runtime.freeMemory()));
+                        log.write("\n");
+                        log.flush();
+
+//                    System.out.println("Free memory: " + runtime.freeMemory());
+                    runtime.gc();
+
                 }
                 if (startIndexMain < maxStack){
                     startIndexMain++;
                 }
+
             }
             startIndexMain = 0;
+
         }
         if (savePresent == true) {
             System.out.println("Saving done");

@@ -89,7 +89,8 @@ public class Main {
     }
 
     public static void processQuery(int min, int max, String[] arr) throws IOException {
-        Queue<String> finalRes = new LinkedList<>();
+        //change IMPL to ArrayList or better performance
+        List<String> finalRes = new ArrayList<>();
         runtime = Runtime.getRuntime();
         BufferedWriter writer = null;
         String outputLocation = "";
@@ -138,8 +139,8 @@ public class Main {
 
         while (play == true){
             for (int i = startIndexMain ; i < finalRes.size(); i++){
-                test = finalRes.poll();
-
+                test = finalRes.get(i);
+                finalRes.remove(i);
                 if (test.length() == max && assigned == false){
                     firstStrWithGivenLength = test;
                     assigned = true;
@@ -167,15 +168,14 @@ public class Main {
                     }
 //                    String testLength = test+arr[j];
 //                    maxLength = testLength.length();
-                    finalRes.add(toWrite);
-
+                        finalRes.add(toWrite);
+//                        log.write(String.valueOf(new Date()));
                         log.write(String.valueOf(runtime.freeMemory()));
                         log.write("\n");
                         log.flush();
 
 //                    System.out.println("Free memory: " + runtime.freeMemory());
                     runtime.gc();
-
                 }
                 if (startIndexMain < maxStack){
                     startIndexMain++;
@@ -187,6 +187,7 @@ public class Main {
         }
         if (savePresent == true) {
             System.out.println("Saving done");
+            log.write(String.valueOf(new Date()));
             System.out.println("================EOF=================");
         }
     }

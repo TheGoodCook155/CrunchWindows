@@ -206,33 +206,33 @@ public class Main {
         return false;
     }
 
-    public static List<List<String>> permuteCrunch(String[] arr) {
-        List<List<String>> results = new ArrayList<>();
-        helperCrunch(arr, 0, arr.length - 1, results);
-        return results;
-    }
-
-    public static void helperCrunch(String [] arr, int l, int r, List<List<String>> results) {
-        if(l == r) {
-            List<String> temp = new ArrayList<>();
-            for(String n : arr) {
-                temp.add(n);
-            }
-            results.add(temp);
-            return;
-        } else {
-            for(int index = l; index <= r; index++) {
-                swapCrunch(arr, l, index);
-                helperCrunch(arr, l + 1, r, results);
-                swapCrunch(arr, l, index);
-            }
-        }
-    }
-
-    public static void swapCrunch(String[] arr, int l, int index) {
-        String temp = arr[l];
-        arr[l] = arr[index];
-        arr[index] = temp;
-    }
+//    public static List<List<String>> permuteCrunch(String[] arr) {
+//        List<List<String>> results = new ArrayList<>();
+//        helperCrunch(arr, 0, arr.length - 1, results);
+//        return results;
+//    }
+//
+//    public static void helperCrunch(String [] arr, int l, int r, List<List<String>> results) {
+//        if(l == r) {
+//            List<String> temp = new ArrayList<>();
+//            for(String n : arr) {
+//                temp.add(n);
+//            }
+//            results.add(temp);
+//            return;
+//        } else {
+//            for(int index = l; index <= r; index++) {
+//                swapCrunch(arr, l, index);
+//                helperCrunch(arr, l + 1, r, results);
+//                swapCrunch(arr, l, index);
+//            }
+//        }
+//    }
+//
+//    public static void swapCrunch(String[] arr, int l, int index) {
+//        String temp = arr[l];
+//        arr[l] = arr[index];
+//        arr[index] = temp;
+//    }
 
 }

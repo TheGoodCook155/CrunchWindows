@@ -89,8 +89,8 @@ public class Main {
     }
 
     public static void processQuery(int min, int max, String[] arr) throws IOException {
-        //change IMPL to ArrayList or better performance
-        List<String> finalRes = new ArrayList<>();
+
+        Queue<String> finalRes = new LinkedList<>();
         runtime = Runtime.getRuntime();
         BufferedWriter writer = null;
         String outputLocation = "";
@@ -120,7 +120,7 @@ public class Main {
                 finalRes.add(toWrite);
             }
         }
-        BufferedWriter log = new BufferedWriter(new FileWriter("leak.txt"));
+//        BufferedWriter log = new BufferedWriter(new FileWriter("leak.txt"));
         int finalResSize = finalRes.size();
         boolean maxStackAssigned = false;
         int maxStack = 0;
@@ -139,8 +139,8 @@ public class Main {
 
         while (play == true){
             for (int i = startIndexMain ; i < finalRes.size(); i++){
-                test = finalRes.get(i);
-                finalRes.remove(i);
+                test = finalRes.poll();
+
                 if (test.length() == max && assigned == false){
                     firstStrWithGivenLength = test;
                     assigned = true;
@@ -166,15 +166,7 @@ public class Main {
 //                        indexInArrWhereStrMinLengthAppearsFirst = finalRes.size();
                         minIndex = true;
                     }
-//                    String testLength = test+arr[j];
-//                    maxLength = testLength.length();
-                        finalRes.add(toWrite);
-//                        log.write(String.valueOf(new Date()));
-                        log.write(String.valueOf(runtime.freeMemory()));
-                        log.write("\n");
-                        log.flush();
-
-//                    System.out.println("Free memory: " + runtime.freeMemory());
+                    finalRes.add(toWrite);
                     runtime.gc();
                 }
                 if (startIndexMain < maxStack){
@@ -187,7 +179,6 @@ public class Main {
         }
         if (savePresent == true) {
             System.out.println("Saving done");
-            log.write(String.valueOf(new Date()));
             System.out.println("================EOF=================");
         }
     }
@@ -213,6 +204,35 @@ public class Main {
             return true;
         }
         return false;
+    }
+
+    public static List<List<String>> permuteCrunch(String[] arr) {
+        List<List<String>> results = new ArrayList<>();
+        helperCrunch(arr, 0, arr.length - 1, results);
+        return results;
+    }
+
+    public static void helperCrunch(String [] arr, int l, int r, List<List<String>> results) {
+        if(l == r) {
+            List<String> temp = new ArrayList<>();
+            for(String n : arr) {
+                temp.add(n);
+            }
+            results.add(temp);
+            return;
+        } else {
+            for(int index = l; index <= r; index++) {
+                swapCrunch(arr, l, index);
+                helperCrunch(arr, l + 1, r, results);
+                swapCrunch(arr, l, index);
+            }
+        }
+    }
+
+    public static void swapCrunch(String[] arr, int l, int index) {
+        String temp = arr[l];
+        arr[l] = arr[index];
+        arr[index] = temp;
     }
 
 }

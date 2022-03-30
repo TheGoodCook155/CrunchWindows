@@ -105,82 +105,78 @@ public class Main {
         if (savePresent == false){
             System.out.println("Calculating...");
         }
-        for (int i = 0; i < arr.length; i++) {
-            for (int j = 0; j < arr.length; j++) {
-                String toWrite = arr[i] + arr[j];
+            for (int i = 0; i < arr.length; i++) {
+                for (int j = 0; j < arr.length; j++) {
+                    String toWrite = arr[i] + arr[j];
 
-                if (savePresent == false && toWrite.length() >= min){
-                    System.out.println(toWrite);
-                }
-                if (savePresent == true && toWrite.length() >= min) {
-                    writer.write(toWrite);
-                    writer.write("\n");
-                    writer.flush();
-                }
-                finalRes.add(toWrite);
-            }
-        }
-//        BufferedWriter log = new BufferedWriter(new FileWriter("leak.txt"));
-        int finalResSize = finalRes.size();
-        boolean maxStackAssigned = false;
-        int maxStack = 0;
-        if (maxStackAssigned == false) {
-            maxStack = finalResSize;
-            maxStackAssigned = true;
-        }
-        int startIndexMain = 0;
-        boolean play = true;
-//        int maxLength = 0;
-        String firstStrWithGivenLength = "";
-        boolean assigned = false;
-        String test = "";
-//        int indexInArrWhereStrMinLengthAppearsFirst = 0;
-        boolean minIndex = false;
-
-        while (play == true){
-            for (int i = startIndexMain ; i < finalRes.size(); i++){
-                test = finalRes.poll();
-
-                if (test.length() == max && assigned == false){
-                    firstStrWithGivenLength = test;
-                    assigned = true;
-                }
-
-                if (firstStrWithGivenLength.equals(test) && !finalRes.contains(test)){
-                    play = false;
-                    break;
-                }
-                for (int j = 0; j < arr.length; j++){
-
-                    String toWrite = test+arr[j];
                     if (savePresent == false && toWrite.length() >= min){
                         System.out.println(toWrite);
                     }
-                    if (savePresent == true && toWrite.length() >= min){
+                    if (savePresent == true && toWrite.length() >= min) {
                         writer.write(toWrite);
                         writer.write("\n");
                         writer.flush();
                     }
-
-                    if((test + arr[j]).length() == min && minIndex == false){
-//                        indexInArrWhereStrMinLengthAppearsFirst = finalRes.size();
-                        minIndex = true;
-                    }
                     finalRes.add(toWrite);
-                    runtime.gc();
                 }
-                if (startIndexMain < maxStack){
-                    startIndexMain++;
+            }
+            int finalResSize = finalRes.size();
+            boolean maxStackAssigned = false;
+            int maxStack = 0;
+            if (maxStackAssigned == false) {
+                maxStack = finalResSize;
+                maxStackAssigned = true;
+            }
+            int startIndexMain = 0;
+            boolean play = true;
+            String firstStrWithGivenLength = "";
+            boolean assigned = false;
+            String test = "";
+            boolean minIndex = false;
+
+            while (play == true){
+                for (int i = startIndexMain ; i < finalRes.size(); i++){
+                    test = finalRes.poll();
+
+                    if (test.length() == max && assigned == false){
+                        firstStrWithGivenLength = test;
+                        assigned = true;
+                    }
+
+                    if (firstStrWithGivenLength.equals(test) && !finalRes.contains(test)){
+                        play = false;
+                        break;
+                    }
+                    for (int j = 0; j < arr.length; j++){
+
+                        String toWrite = test+arr[j];
+                        if (savePresent == false && toWrite.length() >= min){
+                            System.out.println(toWrite);
+                        }
+                        if (savePresent == true && toWrite.length() >= min){
+                            writer.write(toWrite);
+                            writer.write("\n");
+                            writer.flush();
+                        }
+
+                        if((test + arr[j]).length() == min && minIndex == false){
+                            minIndex = true;
+                        }
+                        finalRes.add(toWrite);
+                        runtime.gc();
+                    }
+                    if (startIndexMain < maxStack){
+                        startIndexMain++;
+                    }
+
                 }
+                startIndexMain = 0;
 
             }
-            startIndexMain = 0;
-
-        }
-        if (savePresent == true) {
-            System.out.println("Saving done");
-            System.out.println("================EOF=================");
-        }
+            if (savePresent == true) {
+                System.out.println("Saving done");
+                System.out.println("================EOF=================");
+            }
     }
 
     private static String[] createValueArray(String str){
@@ -205,34 +201,4 @@ public class Main {
         }
         return false;
     }
-
-//    public static List<List<String>> permuteCrunch(String[] arr) {
-//        List<List<String>> results = new ArrayList<>();
-//        helperCrunch(arr, 0, arr.length - 1, results);
-//        return results;
-//    }
-//
-//    public static void helperCrunch(String [] arr, int l, int r, List<List<String>> results) {
-//        if(l == r) {
-//            List<String> temp = new ArrayList<>();
-//            for(String n : arr) {
-//                temp.add(n);
-//            }
-//            results.add(temp);
-//            return;
-//        } else {
-//            for(int index = l; index <= r; index++) {
-//                swapCrunch(arr, l, index);
-//                helperCrunch(arr, l + 1, r, results);
-//                swapCrunch(arr, l, index);
-//            }
-//        }
-//    }
-//
-//    public static void swapCrunch(String[] arr, int l, int index) {
-//        String temp = arr[l];
-//        arr[l] = arr[index];
-//        arr[index] = temp;
-//    }
-
 }
